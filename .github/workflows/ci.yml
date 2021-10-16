@@ -12,7 +12,7 @@ on:
   #   inputs:
   #     clients: [main, demo]
 jobs:
-  prepare-matrix:
+  matrix_prep:
     runs-on: ubuntu-latest
 
     outputs:
