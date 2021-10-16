@@ -33,11 +33,10 @@ jobs:
   Experiment-With-Actions:
     needs: matrix_prep
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     # client: [main, demo, staff]
-    #     client: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
-    #   fail-fast: false
+    strategy:
+      matrix:
+        client: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+      fail-fast: false
     steps:
       - run: echo "Output ${{ needs.matrix_prep.outputs.matrix }}"
       - run: echo "Output ${{ fromJson(needs.matrix_prep.outputs.matrix) }}"
