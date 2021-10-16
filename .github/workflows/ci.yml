@@ -40,6 +40,10 @@ jobs:
     #   fail-fast: false
     steps:
       - run: echo "Output ${{ needs.matrix_prep.outputs.matrix }}"
+      - run: echo "Output ${{ fromJson(needs.matrix_prep.outputs.matrix) }}"
+      - name: Last step failed
+        run: echo
+        if: ${{ failure() }}
       - run: echo "🧖‍♀️ The job is running for client ${{ matrix.client }}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
