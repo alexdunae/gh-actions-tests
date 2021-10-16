@@ -18,13 +18,14 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+      # - name: Check out code into the Go module directory
+      #   uses: actions/checkout@v2
       - id: set-matrix
-        if: "contains(github.event.head_commit.message, '[ci full]')"
+        name: running set matrix
+        # if: "contains(github.event.head_commit.message, '[ci full]')"
         run: |
           branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
-          echo ::set-output name=matrix::{\"['main', 'demo']\"
+          echo ::set-output name=matrix::["main", "demo"]
         # run: |
         #   branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
         #   matrix=$(jq --arg branchName "$branchName" 'map(. | select((.runOn==$branchName) or (.runOn=="always")) )' matrix_includes.json)
