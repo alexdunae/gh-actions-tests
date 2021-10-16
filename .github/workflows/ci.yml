@@ -23,6 +23,8 @@ jobs:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - run: echo "❤️ Commit is for [ci full]"
         if: "contains(github.event.head_commit.message, '[ci full]')"
+      - run: echo "💚 Commit is not for [ci full]"
+        if: "!contains(github.event.head_commit.message, '[ci full]')"
       - name: Last step failed
         run: echo
         if: ${{ failure() }}
