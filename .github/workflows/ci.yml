@@ -24,7 +24,7 @@ jobs:
         name: running set matrix
         # if: "contains(github.event.head_commit.message, '[ci full]')"
         run: |
-          echo ""::set-output name=matrix::main"
+          echo "::set-output name=matrix::main"
         # run: |
         #   branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
         #   matrix=$(jq --arg branchName "$branchName" 'map(. | select((.runOn==$branchName) or (.runOn=="always")) )' matrix_includes.json)
