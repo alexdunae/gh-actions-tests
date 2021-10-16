@@ -24,15 +24,14 @@ jobs:
         name: running set matrix
         # if: "contains(github.event.head_commit.message, '[ci full]')"
         run: |
-          branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
-          matrix=["main", "demo"]
-          echo ::set-output name=matrix::{\"include\":$(echo $matrix)}
+          echo ""::set-output name=matrix::main"
         # run: |
         #   branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
         #   matrix=$(jq --arg branchName "$branchName" 'map(. | select((.runOn==$branchName) or (.runOn=="always")) )' matrix_includes.json)
         #   echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
 
   Experiment-With-Actions:
+    needs: matrix_prep
     runs-on: ubuntu-latest
     strategy:
       matrix:
