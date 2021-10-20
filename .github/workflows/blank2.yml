@@ -68,7 +68,8 @@ jobs:
           X_ON_MAIN_BRANCH: ${{ contains(github.event.ref, 'refs/heads/main') }}
           X_REQUESTED_ALL_CLIENTS: ${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
       - id: set-matrix
-        name: set matrix
+        name: Set CI matrix
+        shell: bash
         # env:
         #   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
@@ -81,7 +82,10 @@ jobs:
           echo "Checking branch to see if we are on 'main' or 'master' (currently ${{ steps.get_branch.outputs.branch }})"
           echo "on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}"
 
-          if [ "$on_main_branch" = true  || "$requested_all_clients" = true ]; then
+          if [ "$requested_all_clients" = true ]; then
+            echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
+          fi;
+          if [ "$on_main_branch" = true || "$requested_all_clients" = true ]; then
               if [ "$requested_all_clients" = true ]; then
                 echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
               elif [ "$on_main_branch" = true ]; then
