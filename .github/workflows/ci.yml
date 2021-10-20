@@ -28,8 +28,8 @@ jobs:
         run: |
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} "
           if [ ! -z ${GITHUB_HEAD_REF+x} ]; then
-              echo "GITHUB_HEAD_REF is blank"
-              :notice::Branch name set so setting matrix to all clients
+              echo "GITHUB_HEAD_REF is set"
+              echo "::notice Branch name set so setting matrix to all clients"
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
