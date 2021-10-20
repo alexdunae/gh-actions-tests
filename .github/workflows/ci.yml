@@ -21,11 +21,10 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: set the head commit message as env
+      - id: set-commit
+        name: set the head commit message as env
         run: |
           echo '::set-env name=commitmsg::${{ github.event.head_commit.message }}'
-      # - name: Check out code into the Go module directory
-      #   uses: actions/checkout@v2
       - id: set-matrix
         name: running set matrix
         env:
@@ -64,9 +63,6 @@ jobs:
         client: ${{fromJson(needs.configure_matrix.outputs.matrix)}}
       fail-fast: false
     steps:
-      - name: get commit message
-        run: |
-          echo Commit MSG = ${{ env.commitmsg }}
       - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
       - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
       - name: Last step failed
