@@ -33,15 +33,15 @@ jobs:
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
 
-          if [ -z "$GITHUB_HEAD_REF" || "$requested_all_clients" == "true" ]; then
-              echo "GITHUB_HEAD_REF is set"
+          if [ -z "$GITHUB_HEAD_REF"  || "$requested_all_clients" == "true" ]; then
+              echo "GITHUB_HEAD_REF is NOT blank '${GITHUB_HEAD_REF}' or requested_all_clients: ${requested_all_clients} "
+              echo "::notice::Running on master branch so setting CI matrix to all clients"
+              echo "::set-output name=matrix::[\"main\",\"demo\"]"
+          else
+              echo "GITHUB_HEAD_REF is not null"
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
               echo "::warning::Running on a branch so only running tests for the 'main' client"
               echo "::set-output name=matrix::[\"main\"]"
-          else
-              echo "GITHUB_HEAD_REF is blank '${GITHUB_HEAD_REF}'"
-              echo "::notice::Running on master branch so setting CI matrix to all clients"
-              echo "::set-output name=matrix::[\"main\",\"demo\"]"
           fi
           echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
 
