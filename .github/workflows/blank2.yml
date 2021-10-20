@@ -20,31 +20,41 @@ jobs:
         name: set the head commit message as env
         run: |
           echo "COMMITMSG=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+      - run: echo $GITHUB_CONTEXT
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          X_ON_MAIN_BRANCH: ${{ contains(github.event.ref, 'refs/heads/main') }}
+          X_REQUESTED_ALL_CLIENTS: ${{ contains(github.event.head_commit.message, 'ci full') }}
       - id: set-matrix
         name: set matrix
         # env:
         #   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
-          echo "interpolate ${{ github.event.head_commit.message }}"
+          echo "interpolate '${{ github.event.head_commit.message }}'"
           echo "interpolate contains ${{ contains(github.event.head_commit.message, 'ci full') }}"
           echo "requested_all_clients=${{ contains(github.event.head_commit.message, 'ci full') }}"
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})"
+          echo "branchreffrominterp=${{ github.event.ref }}"
+          echo "on_main=${{ contains(github.event.ref, 'refs/heads/main') }}"
+          echo "on_main=${{ startsWith(github.event.ref, 'refs/heads/main') }}"
+          echo "on_main=${{ github.event.ref == 'refs/heads/main' }}"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
-          echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
+          echo "COMMIT_MESSAGE altt: ${{env.commitmsg}} try again"
 
-          if [ -z "$GITHUB_HEAD_REF"  || "$requested_all_clients" == "true" ]; then
+          if [ "$on_main" == "true"  || "$requested_all_clients" == "true" ]; then
               echo "GITHUB_HEAD_REF is NOT blank '${GITHUB_HEAD_REF}' or requested_all_clients: ${requested_all_clients} "
               if [ "$requested_all_clients" == "true" ]; then
                 echo "::notice::Commit message included 'ci full' so setting CI matrix to all clients"
-              else
-                echo "::notice::Running on master branch so setting CI matrix to all clients"
               fi;
 
+              if [ "$on_main" == "true" ]; then
+                echo "::notice::Running on master branch so setting CI matrix to all clients"
+              fi;
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
               echo "GITHUB_HEAD_REF is not null"
-              echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
+              echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on single client)"
               echo "::notice::Running on a branch so only running tests for the 'main' client"
               echo "::set-output name=matrix::[\"main\"]"
           fi
