@@ -29,12 +29,14 @@ jobs:
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} "
           if [ ! -z ${GITHUB_HEAD_REF+x} ]; then
               echo "GITHUB_HEAD_REF is set"
-              echo "::notice Branch name set so setting matrix to all clients"
-              echo "::set-output name=matrix::[\"main\",\"demo\"]"
-          else
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
-              :notice::Blank branch name so setting matrix to main only
+              echo "::notice::Blank branch name so setting matrix to main only"
               echo "::set-output name=matrix::[\"main\"]"
+
+
+          else
+              echo "::notice::Branch name is blank so setting matrix to all clients"
+              echo "::set-output name=matrix::[\"main\",\"demo\"]"
           fi
           echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
 
