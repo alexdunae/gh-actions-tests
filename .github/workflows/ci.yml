@@ -32,7 +32,7 @@ jobs:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         # if: "contains(github.event.head_commit.message, '[ci full]')"
         run: |
-          echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF}"
+          echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
           echo "interpolate ${{ github.event.head_commit.message }}"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${env.commit_message}"
