@@ -22,6 +22,10 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+
       - name: Get pull request commit message from SHA
         if: ${{github.event_name == 'pull_request'}}
         shell: bash
