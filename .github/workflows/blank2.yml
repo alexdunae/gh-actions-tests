@@ -35,8 +35,8 @@ jobs:
           echo git log --format=%B -n 1 $GITHUB_SHA
           echo "git log --format=%B -n 1 $GITHUB_SHA"
           echo git log -1 --pretty=%B
-          echo "git log -1 --pretty=%B"
-          echo "X_PR_COMMIT=$(git log --format=%B -n 1 ${GITHUB_SHA})" >> $GITHUB_ENV
+          echo "X_PR_COMMIT=$(git log --format=%B -n 1 ${{ github.event.after }})"
+          echo "X_PR_COMMIT=$(git log --format=%B -n 1 ${{ github.event.after }})" >> $GITHUB_ENV
           echo "X_LAST_COMMIT=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
 
       - name: Get branch name (merge)
