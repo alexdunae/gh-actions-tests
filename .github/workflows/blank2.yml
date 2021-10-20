@@ -1,10 +1,7 @@
 name: Customizable
 on:
   push:
-    branches:
-      - $default-branch
-      - master
-      - main
+    branches: [main]
   pull_request:
     branches:
       - "*"
@@ -14,51 +11,50 @@ on:
   #   inputs:
   #     clients: [main, demo]
 jobs:
-  matrix_prep:
+  configure_matrix:
+    name: Configure CI matrix
     runs-on: ubuntu-latest
-
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      # - name: Check out code into the Go module directory
-      #   uses: actions/checkout@v2
+      - id: set-head-commit
+        name: set the head commit message as env
+        run: |
+          echo "COMMITMSG=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
       - id: set-matrix
         name: running set matrix
-        env:
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-        # if: "contains(github.event.head_commit.message, '[ci full]')"
+        # env:
+        #   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          echo "GITHUB_HEAD_REF is $GITHUB_HEAD_REF"
+          echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
           echo "interpolate ${{ github.event.head_commit.message }}"
+          echo "interpolate contains ${{ contains(github.event.head_commit.message, 'ci full') }}"
+          echo "requested_all_clients=${{ contains(github.event.head_commit.message, 'ci full') }}
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
-          if [ ! -z ${GITHUB_HEAD_REF+x} ]; then
+          echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
+
+          if [ ! -z "$GITHUB_HEAD_REF" ] || [ "$requested_all_clients" == "true" ]; then
               echo "GITHUB_HEAD_REF is set"
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
               echo "::warning::Running on a branch so only running tests for the 'main' client"
               echo "::set-output name=matrix::[\"main\"]"
           else
-              echo "::notice::Running on master so setting CI matrix to all clients"
+              echo "GITHUB_HEAD_REF is blank '${GITHUB_HEAD_REF}'"
+              echo "::notice::Running on master branch so setting CI matrix to all clients"
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           fi
           echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
 
-        # run: |
-        #   echo "::set-output name=matrix::[\"main\",\"demo\"]"
-        # run: |
-        #   branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
-        #   matrix=$(jq --arg branchName "$branchName" 'map(. | select((.runOn==$branchName) or (.runOn=="always")) )' matrix_includes.json)
-        #   echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
-
   test:
-    needs: matrix_prep
+    needs: configure_matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        client: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+        client: ${{fromJson(needs.configure_matrix.outputs.matrix)}}
       fail-fast: false
     steps:
-      - run: echo "Output ${{ needs.matrix_prep.outputs.matrix }}"
-      - run: echo "Output ${{ fromJson(needs.matrix_prep.outputs.matrix) }}"
+      - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
+      - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
       - name: Last step failed
         run: echo
         if: ${{ failure() }}
