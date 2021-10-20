@@ -26,11 +26,14 @@ jobs:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         # if: "contains(github.event.head_commit.message, '[ci full]')"
         run: |
+          echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} "
           if [ ! -z ${GITHUB_HEAD_REF+x} ]; then
               echo "GITHUB_HEAD_REF is blank"
+              :notice::Branch name set so setting matrix to all clients
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
+              :notice::Blank branch name so setting matrix to main only
               echo "::set-output name=matrix::[\"main\"]"
           fi
           echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
