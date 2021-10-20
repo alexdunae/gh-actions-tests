@@ -35,6 +35,7 @@ jobs:
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF}"
           echo "interpolate ${{ github.event.head_commit.message }}"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
+          echo "COMMIT_MESSAGE altt: ${env.commit_message}"
           echo Commit MSG = ${{ env.commitmsg }}
           if [ ! -z "$GITHUB_HEAD_REF" ]; then
               echo "GITHUB_HEAD_REF is set"
