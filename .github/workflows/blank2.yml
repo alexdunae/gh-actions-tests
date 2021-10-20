@@ -29,10 +29,11 @@ jobs:
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
           echo "interpolate ${{ github.event.head_commit.message }}"
           echo "interpolate contains ${{ contains(github.event.head_commit.message, 'ci full') }}"
+          echo "requested_all_clients=${{ contains(github.event.head_commit.message, 'ci full') }}
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
 
-          if [ ! -z "$GITHUB_HEAD_REF" ]; then
+          if [ ! -z "$GITHUB_HEAD_REF" ] || [ "$requested_all_clients" == "true" ]; then
               echo "GITHUB_HEAD_REF is set"
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
               echo "::warning::Running on a branch so only running tests for the 'main' client"
