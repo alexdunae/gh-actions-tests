@@ -44,15 +44,15 @@ jobs:
         id: get_branch
         run: |
           if [[ '${{ github.event_name }}' == 'push' ]]; then
-            echo "::set-output name=branch::$(cat ${GITHUB_REF#refs/heads/} | tr / -)"
+            echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
           elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
-            echo "::set-output name=branch::$(cat ${GITHUB_HEAD_REF} | tr / -)"
+            echo "::set-output name=branch::$(echo ${GITHUB_HEAD_REF} | tr / -)"
           fi
 
       - name: Did we?
         run: |
           echo "${{steps.get_commit_message.outputs.commit_message}}"
-          echo "${{steps.get_commit_message.outputs.branch}}"
+          echo "${{steps.get_branch.outputs.branch}}"
       - name: Get pull request commit message from SHA
         if: ${{github.event_name == 'pull_request'}}
         shell: bash
@@ -61,14 +61,6 @@ jobs:
           echo "event sha: ${{github.event.sha }}"
           echo "event after sha: ${{github.event.after }}"
           echo git log --format=%B -n 1 $GITHUB_SHA
-          echo "git log --format=%B -n 1 $GITHUB_SHA"
-          echo git log -1 --pretty=%B
-          echo "X_PR_COMMIT=$(git log --no-merges --oneline --format=%B -n 1 ${{ github.event.after }})"
-          echo "X_PR_COMMIT=$(git log --no-merges --oneline --format=%B -n 1 ${{ github.event.after }})" >> $GITHUB_ENV
-          echo "X_LAST_COMMIT=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
-          echo " --no-merges -1 --oneline"
-          echo "X_LAST_COMMIT_ONE=$(git log --no-merges -1 --oneline)"
-          echo "X_LAST_COMMIT_ONE=$(git log --no-merges -1 --oneline)" >> $GITHUB_ENV
 
       - name: Get branch name (merge)
         if: ${{github.event_name != 'pull_request'}}
