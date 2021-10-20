@@ -35,7 +35,12 @@ jobs:
 
           if [ -z "$GITHUB_HEAD_REF"  || "$requested_all_clients" == "true" ]; then
               echo "GITHUB_HEAD_REF is NOT blank '${GITHUB_HEAD_REF}' or requested_all_clients: ${requested_all_clients} "
-              echo "::notice::Running on master branch so setting CI matrix to all clients"
+              if [ "$requested_all_clients" == "true" ]; then
+                echo "::notice::Commit message included 'ci full' so setting CI matrix to all clients"
+              else
+                echo "::notice::Running on master branch so setting CI matrix to all clients"
+              fi;
+
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
               echo "GITHUB_HEAD_REF is not null"
