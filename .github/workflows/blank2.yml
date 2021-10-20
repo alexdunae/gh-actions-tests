@@ -22,12 +22,13 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Get commit message of SHA
+      - name: Get pull request commit message from SHA
+        if: ${{github.event_name == 'pull_request'}}
         shell: bash
         run: |
-          echo "event hash: ${{github.event.sha }}"
+          echo "event sha: ${{github.event.sha }}"
           echo git log --format=%B -n 1 ${{github.event.sha }}
-          echo git log --format=%B -n 1 ${{github.event.sha }} >> $GITHUB_ENV
+
       - name: Get branch name (merge)
         if: ${{github.event_name != 'pull_request'}}
         shell: bash
