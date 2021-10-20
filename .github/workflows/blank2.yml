@@ -29,6 +29,7 @@ jobs:
           echo "interpolate ${{ github.event.head_commit.message }}"
           echo "interpolate contains ${{ contains(github.event.head_commit.message, 'ci full') }}"
           echo "requested_all_clients=${{ contains(github.event.head_commit.message, 'ci full') }}"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
 
