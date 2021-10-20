@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - $default-branch
+      - master
+      - main
   pull_request:
     branches:
       - "*"
