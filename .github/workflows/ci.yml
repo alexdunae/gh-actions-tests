@@ -14,7 +14,8 @@ on:
   #   inputs:
   #     clients: [main, demo]
 jobs:
-  matrix_prep:
+  configure_matrix:
+    name: Configure CI matrix
     runs-on: ubuntu-latest
 
     outputs:
@@ -38,7 +39,7 @@ jobs:
               echo "::set-output name=matrix::[\"main\"]"
           else
               echo "GITHUB_HEAD_REF is blank '${GITHUB_HEAD_REF}'"
-              echo "::notice::Running on master so setting CI matrix to all clients"
+              echo "::notice::Running on master branch so setting CI matrix to all clients"
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           fi
           echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
@@ -51,15 +52,15 @@ jobs:
         #   echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
 
   test:
-    needs: matrix_prep
+    needs: configure_matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        client: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+        client: ${{fromJson(needs.configure_matrix.outputs.matrix)}}
       fail-fast: false
     steps:
-      - run: echo "Output ${{ needs.matrix_prep.outputs.matrix }}"
-      - run: echo "Output ${{ fromJson(needs.matrix_prep.outputs.matrix) }}"
+      - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
+      - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
       - name: Last step failed
         run: echo
         if: ${{ failure() }}
