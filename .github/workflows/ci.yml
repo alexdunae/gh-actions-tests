@@ -34,8 +34,6 @@ jobs:
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
               echo "::warning::Running on a branch so only running tests for the 'main' client"
               echo "::set-output name=matrix::[\"main\"]"
-
-
           else
               echo "::notice::Running on master so setting CI matrix to all clients"
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
