@@ -20,8 +20,8 @@ jobs:
     steps:
       - id: set-matrix
         name: running set matrix
-        env:
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        # env:
+        #   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
           echo "interpolate ${{ github.event.head_commit.message }}"
