@@ -62,23 +62,6 @@ jobs:
           echo "event after sha: ${{github.event.after }}"
           echo git log --format=%B -n 1 $GITHUB_SHA
 
-      - name: Get branch name (merge)
-        if: ${{github.event_name != 'pull_request'}}
-        shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
-
-      - name: Get branch name (pull request)
-        if: ${{github.event_name == 'pull_request'}}
-        shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)" >> $GITHUB_ENV
-
-      - name: Debug
-        run: echo ${{ env.BRANCH_NAME }}
-
-      - id: set-head-commit
-        name: set the head commit message as env
-        run: |
-          echo "COMMITMSG=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
       - run: echo $GITHUB_CONTEXT
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -91,32 +74,27 @@ jobs:
         run: |
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
           echo "interpolate '${{ steps.get_commit_message.outputs.commit_message }}'"
+
           echo "Checking commit message for 'ci full' -- ${{ steps.get_commit_message.outputs.commit_message }}"
           echo "requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}"
+
+          echo "Checking branch to see if we are on 'main' -- ${{ env.BRANCH_NAME }}"
+          echo "on_main=${{ steps.get_branch.outputs.branch == 'main' }}"
+          echo "default-branch is ${{default-branch}}"
 
           echo "Hello ${{ github.event.inputs.client_name }}!"
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})"
           echo "branchreffrominterp=${{ github.event.ref }}"
-          echo "Checking env.BRANCH_NAME to see if we are on 'main' -- ${{ env.BRANCH_NAME }}"
-          echo "on_main=${{ contains(env.BRANCH_NAME, 'refs/heads/main') }}"
-          echo "on_main=${{ startsWith(env.BRANCH_NAME, 'refs/heads/main') }}"
-          echo "on_main=${{ env.BRANCH_NAME == 'refs/heads/main' }}"
-          echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
-          echo "COMMIT_MESSAGE altt: ${{env.commitmsg}} try again"
 
-          if [ "$X_ON_MAIN_BRANCH" == "true"  || "$X_REQUESTED_ALL_CLIENTS" == "true" ]; then
+          if [ "$on_main" == "true"  || "$requested_all_clients" == "true" ]; then
               if [ "$requested_all_clients" == "true" ]; then
-                echo "::notice::Commit message included 'ci full' so setting CI matrix to all clients"
-              fi;
-
-              if [ "$on_main" == "true" ]; then
-                echo "::notice::Running on master branch so setting CI matrix to all clients"
+                echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
+              elif [ "$on_main" == "true" ]; then
+                echo "::notice::Running on master branch so setting CI matrix to include all clients"
               fi;
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
-              echo "GITHUB_HEAD_REF is not null"
-              echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on single client)"
-              echo "::notice::Running on a branch so only running tests for the 'main' client"
+              echo "::notice::Running on a branch so only running tests for the 'main' client - use a commit message with \"ci full\" to include all clients"
               echo "::set-output name=matrix::[\"main\"]"
           fi
 
