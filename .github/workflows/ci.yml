@@ -44,13 +44,6 @@ jobs:
           fi
           echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
 
-        # run: |
-        #   echo "::set-output name=matrix::[\"main\",\"demo\"]"
-        # run: |
-        #   branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
-        #   matrix=$(jq --arg branchName "$branchName" 'map(. | select((.runOn==$branchName) or (.runOn=="always")) )' matrix_includes.json)
-        #   echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
-
   test:
     needs: configure_matrix
     runs-on: ubuntu-latest
