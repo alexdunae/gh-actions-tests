@@ -1,7 +1,7 @@
 name: GitHub Actions Demo
 on:
   push:
-    branches: [main]
+    branches: [$default-branch]
   pull_request:
     branches:
       - "*"
@@ -28,6 +28,7 @@ jobs:
         run: |
           echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
           echo "interpolate ${{ github.event.head_commit.message }}"
+          echo "interpolate contains ${{ contains(github.event.head_commit.message, "ci full") }}"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${env.commitmsg}"
           echo Commit MSG = ${ env.commitmsg }
