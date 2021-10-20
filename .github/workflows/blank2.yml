@@ -80,7 +80,6 @@ jobs:
 
           echo "Checking branch to see if we are on 'main' -- ${{ env.BRANCH_NAME }}"
           echo "on_main=${{ steps.get_branch.outputs.branch == 'main' }}"
-          echo "default-branch is ${{default-branch}}"
 
           echo "Hello ${{ github.event.inputs.client_name }}!"
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})"
