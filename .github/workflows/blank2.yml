@@ -26,8 +26,10 @@ jobs:
         if: ${{github.event_name == 'pull_request'}}
         shell: bash
         run: |
+          echo "sha from GITHUB_SHA: ${GITHUB_SHA}"
           echo "event sha: ${{github.event.sha }}"
-          echo git log --format=%B -n 1 ${{github.event.sha }}
+          echo git log --format=%B -n 1 $GITHUB_SHA
+          echo "X_PR_COMMIT=$(git log --format=%B -n 1 ${GITHUB_SHA})" >> $GITHUB_ENV
 
       - name: Get branch name (merge)
         if: ${{github.event_name != 'pull_request'}}
