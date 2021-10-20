@@ -23,8 +23,8 @@ jobs:
       - run: echo $GITHUB_CONTEXT
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          ON_MAIN_BRANCH: ${{ contains(github.event.ref, 'refs/heads/main') }}
-          REQUESTED_ALL_CLIENTS: ${{ contains(github.event.head_commit.message, 'ci full') }}
+          X_ON_MAIN_BRANCH: ${{ contains(github.event.ref, 'refs/heads/main') }}
+          X_REQUESTED_ALL_CLIENTS: ${{ contains(github.event.head_commit.message, 'ci full') }}
       - id: set-matrix
         name: set matrix
         # env:
