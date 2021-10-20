@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [*]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   # workflow_dispatch:
@@ -29,7 +29,6 @@ jobs:
           echo "interpolate ${{ github.event.head_commit.message }}"
           echo "interpolate contains ${{ contains(github.event.head_commit.message, 'ci full') }}"
           echo "requested_all_clients=${{ contains(github.event.head_commit.message, 'ci full') }}"
-
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
 
