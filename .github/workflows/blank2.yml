@@ -78,17 +78,13 @@ jobs:
           echo "Checking commit message for 'ci full' -- ${{ steps.get_commit_message.outputs.commit_message }}"
           echo "requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}"
 
-          echo "Checking branch to see if we are on 'main' -- ${{ env.BRANCH_NAME }}"
-          echo "on_main=${{ steps.get_branch.outputs.branch == 'main' }}"
+          echo "Checking branch to see if we are on 'main' or 'master' (currently ${{ steps.get_branch.outputs.branch }})"
+          echo "on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}"
 
-          echo "Hello ${{ github.event.inputs.client_name }}!"
-          echo "branch=$(echo ${GITHUB_REF#refs/heads/})"
-          echo "branchreffrominterp=${{ github.event.ref }}"
-
-          if [ "$on_main" == "true"  || "$requested_all_clients" == "true" ]; then
-              if [ "$requested_all_clients" == "true" ]; then
+          if [ "$on_main_branch" = true  || "$requested_all_clients" = true ]; then
+              if [ "$requested_all_clients" = true ]; then
                 echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
-              elif [ "$on_main" == "true" ]; then
+              elif [ "$on_main_branch" = true ]; then
                 echo "::notice::Running on master branch so setting CI matrix to include all clients"
               fi;
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
