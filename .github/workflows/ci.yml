@@ -19,10 +19,6 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - id: set-commit
-        name: set the head commit message as env
-        run: |
-          echo '::set-env name=commitmsg::${{ github.event.head_commit.message }}'
       - id: set-matrix
         name: running set matrix
         env:
@@ -33,7 +29,7 @@ jobs:
           echo "interpolate ${{ github.event.head_commit.message }}"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
           echo "COMMIT_MESSAGE altt: ${env.commit_message}"
-          echo Commit MSG = ${{ env.commitmsg }}
+          echo Commit MSG = ${ env.commitmsg }
           if [ ! -z "$GITHUB_HEAD_REF" ]; then
               echo "GITHUB_HEAD_REF is set"
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
