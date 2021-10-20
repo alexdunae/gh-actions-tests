@@ -18,6 +18,10 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+      - id: set-head-commit
+        name: set the head commit message as env
+        run: |
+          echo '::set-env name=commitmsg::${{ github.event.head_commit.message }}'
       - id: set-matrix
         name: running set matrix
         # env:
