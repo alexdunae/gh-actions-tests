@@ -40,10 +40,9 @@ jobs:
           else
               echo "GITHUB_HEAD_REF is not null"
               echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
-              echo "::warning::Running on a branch so only running tests for the 'main' client"
+              echo "::notice::Running on a branch so only running tests for the 'main' client"
               echo "::set-output name=matrix::[\"main\"]"
           fi
-          echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
 
   test:
     needs: configure_matrix
