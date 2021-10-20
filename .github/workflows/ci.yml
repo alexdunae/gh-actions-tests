@@ -12,8 +12,6 @@ on:
   #   inputs:
   #     clients: [main, demo]
 jobs:
-  # env:
-  #   commitmsg: ${{ github.event.head_commit.message }}
   configure_matrix:
     name: Configure CI matrix
     runs-on: ubuntu-latest
