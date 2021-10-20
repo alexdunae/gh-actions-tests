@@ -1,9 +1,7 @@
 name: Customizable
 on:
   push:
-    branches:
-      - main
-      - "refs/pull/*"
+    branches: [*]
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]
