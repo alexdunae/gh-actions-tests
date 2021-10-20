@@ -1,0 +1,78 @@
+name: GitHub Actions Demo
+on:
+  push:
+    branches: [$default-branch]
+  pull_request:
+    branches:
+      - "*"
+
+  # Allows you to run this workflow manually from the Actions tab
+  # workflow_dispatch:
+  #   inputs:
+  #     clients: [main, demo]
+jobs:
+  configure_matrix:
+    name: Configure CI matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-head-commit
+        name: set the head commit message as env
+        run: |
+          echo "COMMITMSG=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+      - id: set-matrix
+        name: running set matrix
+        # env:
+        #   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
+          echo "interpolate ${{ github.event.head_commit.message }}"
+          echo "interpolate contains ${{ contains(github.event.head_commit.message, "ci full") }}"
+          echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
+          echo "COMMIT_MESSAGE altt: ${env.commitmsg}"
+          echo Commit MSG = ${ env.commitmsg }
+          if [ ! -z "$GITHUB_HEAD_REF" ]; then
+              echo "GITHUB_HEAD_REF is set"
+              echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} (so only running on main)"
+              echo "::warning::Running on a branch so only running tests for the 'main' client"
+              echo "::set-output name=matrix::[\"main\"]"
+          else
+              echo "GITHUB_HEAD_REF is blank '${GITHUB_HEAD_REF}'"
+              echo "::notice::Running on master branch so setting CI matrix to all clients"
+              echo "::set-output name=matrix::[\"main\",\"demo\"]"
+          fi
+          echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+
+  test:
+    needs: configure_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        client: ${{fromJson(needs.configure_matrix.outputs.matrix)}}
+      fail-fast: false
+    steps:
+      - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
+      - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
+      - name: Last step failed
+        run: echo
+        if: ${{ failure() }}
+      - run: echo "🧖‍♀️ The job is running for client ${{ matrix.client }}."
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "❤️ Commit is for [ci full]"
+        if: "contains(github.event.head_commit.message, '[ci full]')"
+      - run: echo "💚 Commit is not for [ci full]"
+        if: "!contains(github.event.head_commit.message, '[ci full]')"
+      - name: Last step failed
+        run: echo
+        if: ${{ failure() }}
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
