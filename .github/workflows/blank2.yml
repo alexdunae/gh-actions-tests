@@ -31,7 +31,7 @@ jobs:
           echo "requested_all_clients=${{ contains(github.event.head_commit.message, 'ci full') }}"
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})"
           echo "COMMIT_MESSAGE: ${COMMIT_MESSAGE}"
-          echo "COMMIT_MESSAGE altt: ${{env.commitmsg}}"
+          echo "COMMIT_MESSAGE altt: ${{env.commitmsg}} try again"
 
           if [ -z "$GITHUB_HEAD_REF"  || "$requested_all_clients" == "true" ]; then
               echo "GITHUB_HEAD_REF is NOT blank '${GITHUB_HEAD_REF}' or requested_all_clients: ${requested_all_clients} "
