@@ -20,7 +20,7 @@ jobs:
       - id: set-head-commit
         name: set the head commit message as env
         run: |
-          echo "COMMITMSG=${ github.event.head_commit.message }" >> $GITHUB_ENV
+          echo "COMMITMSG=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
       - id: set-matrix
         name: running set matrix
         # env:
