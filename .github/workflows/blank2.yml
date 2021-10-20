@@ -1,9 +1,12 @@
 name: Customizable
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "refs/pull/*"
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened]
 
   # Allows you to run this workflow manually from the Actions tab
   # workflow_dispatch:
