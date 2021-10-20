@@ -39,6 +39,9 @@ jobs:
           echo "X_PR_COMMIT=$(git log --format=%B -n 1 ${{ github.event.after }})"
           echo "X_PR_COMMIT=$(git log --format=%B -n 1 ${{ github.event.after }})" >> $GITHUB_ENV
           echo "X_LAST_COMMIT=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+          echo " --no-merges -1 --oneline"
+          echo "X_LAST_COMMIT_ONE=$(git log --no-merges -1 --oneline)"
+          echo "X_LAST_COMMIT_ONE=$(git log --no-merges -1 --oneline)" >> $GITHUB_ENV
 
       - name: Get branch name (merge)
         if: ${{github.event_name != 'pull_request'}}
