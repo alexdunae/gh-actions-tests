@@ -2,27 +2,18 @@ name: Customizable
 on:
   push:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      client_name:
-        description: "Client"
-        required: false
-        default: "main"
   pull_request:
     types: [opened, synchronize, reopened]
 
-  # Allows you to run this workflow manually from the Actions tab
-  # workflow_dispatch:
-  #   inputs:
-  #     clients: [main, demo]
 jobs:
   configure_matrix:
     name: Configure CI matrix
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
       branch: ${{ steps.get_branch.outputs.branch }}
+      commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -51,40 +42,22 @@ jobs:
 
       - name: Did we?
         run: |
-          echo "${{steps.get_commit_message.outputs.commit_message}}"
-          echo "${{steps.get_branch.outputs.branch}}"
-      - name: Get pull request commit message from SHA
-        if: ${{github.event_name == 'pull_request'}}
-        shell: bash
-        run: |
-          echo "sha from GITHUB_SHA: ${GITHUB_SHA}"
-          echo "event sha: ${{github.event.sha }}"
-          echo "event after sha: ${{github.event.after }}"
-          echo git log --format=%B -n 1 $GITHUB_SHA
 
       - run: echo $GITHUB_CONTEXT
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          X_ON_MAIN_BRANCH: ${{ contains(github.event.ref, 'refs/heads/main') }}
-          X_REQUESTED_ALL_CLIENTS: ${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
+
       - id: set-matrix
         name: Set CI matrix
         shell: bash
-        # env:
-        #   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          echo "GITHUB_HEAD_REF is ${GITHUB_HEAD_REF} hello"
-          echo "interpolate '${{ steps.get_commit_message.outputs.commit_message }}'"
+          echo "commit_message: ${{steps.get_commit_message.outputs.commit_message}}"
+          echo "branch: ${{steps.get_branch.outputs.branch}}"
 
-          echo "Checking commit message for 'ci full' -- ${{ steps.get_commit_message.outputs.commit_message }}"
           echo "requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}"
 
-          echo "Checking branch to see if we are on 'main' or 'master' (currently ${{ steps.get_branch.outputs.branch }})"
           echo "on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}"
 
-          if [ "$requested_all_clients" = true ]; then
-            echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
-          fi;
           if [ "$on_main_branch" = true || "$requested_all_clients" = true ]; then
               if [ "$requested_all_clients" = true ]; then
                 echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
@@ -93,7 +66,7 @@ jobs:
               fi;
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
-              echo "::notice::Running on a branch so only running tests for the 'main' client - use a commit message with \"ci full\" to include all clients"
+              echo "::notice::On a branch so only running tests for the 'main' client - use a commit message with \"ci full\" to include all clients"
               echo "::set-output name=matrix::[\"main\"]"
           fi
 
@@ -114,13 +87,6 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - run: echo "❤️ Commit is for [ci full]"
-        if: "contains(github.event.head_commit.message, '[ci full]')"
-      - run: echo "💚 Commit is not for [ci full]"
-        if: "!contains(github.event.head_commit.message, '[ci full]')"
-      - name: Last step failed
-        run: echo
-        if: ${{ failure() }}
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
