@@ -67,7 +67,7 @@ jobs:
           fi
 
           if [ "$on_main_branch" = "true" || "$requested_all_clients" = "true" ]; then
-              if [ "$requested_all_clients" = true ]; then
+              if [ "$requested_all_clients" = "true" ]; then
                 echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
               elif [ "$on_main_branch" = "true" ]; then
                 echo "::notice::Running on master branch so setting CI matrix to include all clients"
