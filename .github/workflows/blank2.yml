@@ -62,10 +62,6 @@ jobs:
           requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
           on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
 
-          if [ "$requested_all_clients" = "true" ]; then
-            echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
-          fi
-
           if [ "$on_main_branch" = "true" || "$requested_all_clients" = "true" ]; then
               if [ "$requested_all_clients" = "true" ]; then
                 echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
@@ -74,7 +70,7 @@ jobs:
               fi;
               echo "::set-output name=matrix::[\"main\",\"demo\"]"
           else
-              echo "::notice::On a branch so only running tests for the 'main' client - use a commit message with \"ci full\" to include all clients"
+              echo "::warning::On a branch so only running tests for the 'main' client - create a commit message with \"ci full\" to run CI on all clients"
               echo "::set-output name=matrix::[\"main\"]"
           fi
 
