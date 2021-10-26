@@ -1,0 +1,17 @@
+name: "Dynamic Matrix"
+description: "Define a Github Action matrix based on the branch and commit name"
+inputs:
+  clients-on-prs: # id of input
+    description: "Which client to run on PRs"
+    required: false
+    default: "main"
+  clients-on-main: # id of input
+    description: "Which client to run on PRs"
+    required: false
+    default: "main"
+outputs:
+  matrix: # id of output
+    description: "Comma separated list of matrix values"
+runs:
+  using: "node12"
+  main: "index.js"
