@@ -9,6 +9,8 @@ jobs:
   configure_matrix:
     name: Configure CI matrix
     runs-on: ubuntu-latest
+    env:
+      all_clients: '["stolo", "main"]'
     outputs:
       branch: ${{ steps.get_branch.outputs.branch }}
       commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
@@ -21,6 +23,9 @@ jobs:
           # required for pull_requests so we can do HEAD^2 to get the commit message
           fetch-depth: 2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+
+      - name: "Custom action"
+        uses: ./.github/actions/matrix
 
       - name: Get commit message
         id: get_commit_message
@@ -54,9 +59,12 @@ jobs:
           echo "commit_message: ${{steps.get_commit_message.outputs.commit_message}}"
           echo "branch: ${{steps.get_branch.outputs.branch}}"
 
-          echo "requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}"
+          requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
+          on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
 
-          echo "on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}"
+          if [ "$requested_all_clients" = true ]; then
+            echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
+          fi
 
           if [ "$on_main_branch" = true || "$requested_all_clients" = true ]; then
               if [ "$requested_all_clients" = true ]; then
