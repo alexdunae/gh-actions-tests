@@ -7,6 +7,14 @@ async function run() {
     const ms = core.getInput("milliseconds");
     core.info(`Waiting ${ms} milliseconds ...`);
 
+    const clientsOnMaster = core.getInput("clientsOnMaster");
+    const clientsOnPR = core.getInput("clientsOnPR");
+    //   const filterString = core.getInput("filter");
+
+    //   core.debug("Inside try block");
+    //   core.warning("Yolo!");
+    //   core.debug(`inputFoile ${inputFilePath}`);
+
     core.debug(new Date().toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
     // await wait(parseInt(ms));
     core.info(new Date().toTimeString());

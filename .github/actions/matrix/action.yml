@@ -1,11 +1,11 @@
 name: "Dynamic Matrix"
 description: "Define a Github Action matrix based on the branch and commit name"
 inputs:
-  clients-on-prs: # id of input
-    description: "Which client to run on PRs"
+  clientsOnMaster: # id of input
+    description: "Which client to run on master"
     required: false
-    default: "main"
-  clients-on-main: # id of input
+    default: "main,stolo,culturecode"
+  clientsonPRs: # id of input
     description: "Which client to run on PRs"
     required: false
     default: "main"
