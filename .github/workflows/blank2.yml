@@ -68,7 +68,7 @@ jobs:
               elif [ "$on_main_branch" = "true" ]; then
                 echo "::notice::Running on master branch so setting CI matrix to include all clients"
               fi;
-              echo "::set-output name=matrix::[\"main\",\"demo\"]"
+              echo "::set-output name=matrix::[\"main\",\"culturecode\"]"
           else
               echo "::warning::On a branch so only running tests for the 'main' client - create a commit message with \"ci full\" to run CI on all clients"
               echo "::set-output name=matrix::[\"main\"]"
