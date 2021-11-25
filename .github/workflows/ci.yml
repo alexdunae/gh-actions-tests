@@ -21,7 +21,6 @@ jobs:
         with:
           # required for pull_requests so we can do HEAD^2 to get the commit message
           fetch-depth: 2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
 
       - name: Get commit message
         id: get_commit_message
@@ -56,7 +55,7 @@ jobs:
           REQUESTED_ALL_CLIENTS=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
           ON_MAIN_BRANCH=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
 
-          # default
+          # default client - used when we're running against a pull request
           CLIENTS=("culturecode")
 
           # join a bash array of strings into a JSON-compatible array
@@ -72,8 +71,6 @@ jobs:
             echo ']'
           }
 
-          echo $(pwd)
-
           if [[ "$ON_MAIN_BRANCH" = "true" || "$REQUESTED_ALL_CLIENTS" = "true" ]]; then
               if [ "$REQUESTED_ALL_CLIENTS" = "true" ]; then
                   echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
@@ -81,11 +78,12 @@ jobs:
                   echo "::notice::Running on master branch so setting CI matrix to include all clients"
               fi;
 
+              # lookup all the clients in `lib/customization/*.rb`
               IFS=$'\n'
               CLIENTS=($(find ./customization -type f -maxdepth 1 -name "*.rb" -print0 | xargs -0 -I {} basename {} .rb))
               unset IFS
           else
-              echo "::warning::On a branch so only running tests for the 'main' client - create a commit message with \"ci full\" to run CI on all clients"
+              echo "::warning::This action is being run on a Pull Request so we're only running tests for the default client. Push a commit message containing \"ci full\" to run CI for all clients."
           fi
 
           matrix_json=$(json_array "${CLIENTS[@]}")
