@@ -3,14 +3,13 @@ on:
   push:
     branches: [main]
   pull_request:
+    # run when PRs are opened, re-opened or get commits added
     types: [opened, synchronize, reopened]
 
 jobs:
   configure_matrix:
     name: Configure CI matrix
     runs-on: ubuntu-latest
-    env:
-      all_clients: '["stolo", "main"]'
     outputs:
       branch: ${{ steps.get_branch.outputs.branch }}
       commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
@@ -22,10 +21,6 @@ jobs:
         with:
           # required for pull_requests so we can do HEAD^2 to get the commit message
           fetch-depth: 2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-
-      - name: "Custom action"
-        uses: ./.github/actions/matrix
 
       - name: Get commit message
         id: get_commit_message
@@ -45,26 +40,25 @@ jobs:
             echo "::set-output name=branch::$(echo ${GITHUB_HEAD_REF} | tr / -)"
           fi
 
-      - name: Did we?
-        run: |
-
-      - run: echo $GITHUB_CONTEXT
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+        # - run: echo $GITHUB_CONTEXT
+        #   env:
+        #     GITHUB_CONTEXT: ${{ toJson(github) }}
 
       - id: set-matrix
         name: Set CI matrix
         shell: bash
         run: |
+          # debugging only
           echo "commit_message: ${{steps.get_commit_message.outputs.commit_message}}"
           echo "branch: ${{steps.get_branch.outputs.branch}}"
 
           REQUESTED_ALL_CLIENTS=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
           ON_MAIN_BRANCH=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
 
+          # default client - used when we're running against a pull request
           CLIENTS=("culturecode")
 
-
+          # join a bash array of strings into a JSON-compatible array
           # https://stackoverflow.com/a/26809278/559596
           json_array() {
             echo -n '['
@@ -77,8 +71,6 @@ jobs:
             echo ']'
           }
 
-          echo $(pwd)
-
           if [[ "$ON_MAIN_BRANCH" = "true" || "$REQUESTED_ALL_CLIENTS" = "true" ]]; then
               if [ "$REQUESTED_ALL_CLIENTS" = "true" ]; then
                   echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
@@ -86,11 +78,12 @@ jobs:
                   echo "::notice::Running on master branch so setting CI matrix to include all clients"
               fi;
 
+              # lookup all the clients in `lib/customization/*.rb`
               IFS=$'\n'
               CLIENTS=($(find ./customization -type f -maxdepth 1 -name "*.rb" -print0 | xargs -0 -I {} basename {} .rb))
               unset IFS
           else
-              echo "::warning::On a branch so only running tests for the 'main' client - create a commit message with \"ci full\" to run CI on all clients"
+              echo "::warning::This action is being run on a Pull Request so we're only running tests for the default client. Push a commit message containing \"ci full\" to run CI for all clients."
           fi
 
           matrix_json=$(json_array "${CLIENTS[@]}")
@@ -106,9 +99,6 @@ jobs:
     steps:
       - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
       - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
-      - name: Last step failed
-        run: echo
-        if: ${{ failure() }}
       - run: echo "🧖‍♀️ The job is running for client ${{ matrix.client }}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
