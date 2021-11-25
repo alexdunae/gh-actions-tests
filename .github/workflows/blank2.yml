@@ -59,20 +59,42 @@ jobs:
           echo "commit_message: ${{steps.get_commit_message.outputs.commit_message}}"
           echo "branch: ${{steps.get_branch.outputs.branch}}"
 
-          requested_all_clients=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
-          on_main_branch=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
+          REQUESTED_ALL_CLIENTS=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
+          ON_MAIN_BRANCH=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
 
-          if [ "$on_main_branch" = "true" || "$requested_all_clients" = "true" ]; then
-              if [ "$requested_all_clients" = "true" ]; then
-                echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
-              elif [ "$on_main_branch" = "true" ]; then
-                echo "::notice::Running on master branch so setting CI matrix to include all clients"
+          CLIENTS=("culturecode")
+
+
+          # https://stackoverflow.com/a/26809278/559596
+          json_array() {
+            echo -n '['
+            while [ $# -gt 0 ]; do
+              x=${1//\\/\\\\}
+              echo -n \"${x//\"/\\\"}\"
+              [ $# -gt 1 ] && echo -n ','
+              shift
+            done
+            echo ']'
+          }
+
+          echo $(pwd)
+
+          if [[ "$ON_MAIN_BRANCH" = "true" || "$REQUESTED_ALL_CLIENTS" = "true" ]]; then
+              if [ "$REQUESTED_ALL_CLIENTS" = "true" ]; then
+                  echo "::notice::Commit message included 'ci full' so setting CI matrix to include all clients"
+              elif [ "$ON_MAIN_BRANCH" = "true" ]; then
+                  echo "::notice::Running on master branch so setting CI matrix to include all clients"
               fi;
-              echo "::set-output name=matrix::[\"main\",\"culturecode\"]"
+
+              IFS=$'\n'
+              CLIENTS=($(find ./customization -type f -maxdepth 1 -name "*.rb" -print0 | xargs -0 -I {} basename {} .rb))
+              unset IFS
           else
               echo "::warning::On a branch so only running tests for the 'main' client - create a commit message with \"ci full\" to run CI on all clients"
-              echo "::set-output name=matrix::[\"main\"]"
           fi
+
+          matrix_json=$(json_array "${CLIENTS[@]}")
+          echo "::set-output name=matrix::$matrix_json"
 
   test:
     needs: configure_matrix
