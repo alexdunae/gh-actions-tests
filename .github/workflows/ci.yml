@@ -3,14 +3,13 @@ on:
   push:
     branches: [main]
   pull_request:
+    # run when PRs are opened, re-opened or get commits added
     types: [opened, synchronize, reopened]
 
 jobs:
   configure_matrix:
     name: Configure CI matrix
     runs-on: ubuntu-latest
-    env:
-      all_clients: '["stolo", "main"]'
     outputs:
       branch: ${{ steps.get_branch.outputs.branch }}
       commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
@@ -23,9 +22,6 @@ jobs:
           # required for pull_requests so we can do HEAD^2 to get the commit message
           fetch-depth: 2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-
-      - name: "Custom action"
-        uses: ./.github/actions/matrix
 
       - name: Get commit message
         id: get_commit_message
@@ -45,26 +41,25 @@ jobs:
             echo "::set-output name=branch::$(echo ${GITHUB_HEAD_REF} | tr / -)"
           fi
 
-      - name: Did we?
-        run: |
-
-      - run: echo $GITHUB_CONTEXT
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+        # - run: echo $GITHUB_CONTEXT
+        #   env:
+        #     GITHUB_CONTEXT: ${{ toJson(github) }}
 
       - id: set-matrix
         name: Set CI matrix
         shell: bash
         run: |
+          # debugging only
           echo "commit_message: ${{steps.get_commit_message.outputs.commit_message}}"
           echo "branch: ${{steps.get_branch.outputs.branch}}"
 
           REQUESTED_ALL_CLIENTS=${{ contains(steps.get_commit_message.outputs.commit_message, 'ci full') }}
           ON_MAIN_BRANCH=${{ steps.get_branch.outputs.branch == 'main' || steps.get_branch.outputs.branch == 'master' }}
 
+          # default
           CLIENTS=("culturecode")
 
-
+          # join a bash array of strings into a JSON-compatible array
           # https://stackoverflow.com/a/26809278/559596
           json_array() {
             echo -n '['
@@ -106,9 +101,6 @@ jobs:
     steps:
       - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
       - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
-      - name: Last step failed
-        run: echo
-        if: ${{ failure() }}
       - run: echo "🧖‍♀️ The job is running for client ${{ matrix.client }}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
