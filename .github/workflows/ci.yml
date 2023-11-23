@@ -37,7 +37,7 @@ jobs:
       - name: Print summary
         run: |
           {
-            echo "CI defaults to running for 'culturecode' client only on PRs and all clients on master."
+            echo "CI defaults to running for the 'culturecode' client only on PRs.  All clients are tested on the master branch."
             echo ""
             echo "To run for all clients via a PR you can trigger this Github Action manually and set the 'Run all clients' option."
             echo ""
