@@ -37,6 +37,10 @@ jobs:
       - name: Print summary
         run: |
           {
+            echo "CI defaults to running for 'culturecode' client only on PRs and all clients on master."
+            echo "To run for all clients via a PR you can trigger this Github Action manually and set the 'Run all clients' option."
+            echo "| Arg                 | Value |"
+            echo "| ------------------- | ----- |"
             echo "| Clients | ${{ steps.set-matrix.outputs.clients }} |"
           } >> $GITHUB_STEP_SUMMARY
   test:
