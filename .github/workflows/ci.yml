@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        client: ${{fromJson(needs.build.outputs.clients)}}
+        client: ${{fromJson(env.CLIENTS)}}
         ruby-version: ["3.2"]
       fail-fast: false
     steps:
