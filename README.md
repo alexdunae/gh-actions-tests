@@ -17,4 +17,6 @@ You can skip all CI by including `ci skip` in your commit message (this is a [Gi
 
 - Add a client to `customization/*.rb`
 - Open / update / close pull request
-- Experiement with commit messages
+- Experiment with commit messages
+
+Here is some new text, yat yat yat!
