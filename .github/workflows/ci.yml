@@ -14,7 +14,7 @@ on:
         default: 'false'
 
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
       clients: ${{ steps.set-matrix.outputs.clients }}
@@ -46,19 +46,16 @@ jobs:
             echo "| Clients | ${{ steps.set-matrix.outputs.clients }} |"
           } >> $GITHUB_STEP_SUMMARY
   test:
-    needs: build
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        client: ${{ fromJson(needs.build.outputs.clients) }}
+        client: ${{ fromJson(needs.prepare.outputs.clients) }}
         ruby-version: ["3.2"]
       fail-fast: false
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-
-      - run: cat ${{ github.workspace }}/matrix_env
-        shell: bash
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
