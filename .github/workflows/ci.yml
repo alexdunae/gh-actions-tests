@@ -30,10 +30,10 @@ jobs:
         id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" || ("${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.allClients }}" != "true") ]]; then
-            echo "CLIENTS=\"['culturecode']\"" >> $GITHUB_OUTPUT
+            echo "CLIENTS='[\"culturecode\"]'" >> $GITHUB_OUTPUT
           else
             CLIENTS=$(ls lib/customization/*.rb | xargs -n1 basename | sed 's/.rb$//' | jq -R -s -c 'split("\n")[:-1]' | jq -c .)
-            echo "CLIENTS=\"$CLIENTS\"" >> $GITHUB_OUTPUT
+            echo "CLIENTS='$CLIENTS'" >> $GITHUB_OUTPUT
           fi
       - run: echo "🍏 The clients env var was set to ${{ steps.set-matrix.outputs.clients }}."
         # env:
@@ -46,7 +46,7 @@ jobs:
             echo "| ------------------- | ----- |"
             echo "| Print inputs        | ${{ inputs.print-inputs }} |"
             echo "| Environment         | ${{ inputs.environment }} |"
-            echo "| Outputs | ${{ steps.set-matrix.outputs.clients }} |"
+            echo "| Clients | ${{ steps.set-matrix.outputs.clients }} |"
           } >> $GITHUB_STEP_SUMMARY
   test:
     needs: build
