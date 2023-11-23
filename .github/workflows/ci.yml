@@ -35,11 +35,18 @@ jobs:
             CLIENTS=$(ls lib/customization/*.rb | xargs -n1 basename | sed 's/.rb$//' | jq -R -s -c 'split("\n")[:-1]' | jq -c .)
             echo "CLIENTS=\"$CLIENTS\"" >> $GITHUB_ENV
           fi
-
-          echo "$CLIENTS" >> $GITHUB_STEP_SUMMARY
-        env:
-          GITHUB_ENV: ${{ github.workspace }}/matrix_env
-
+      - run: echo "🍏 The clients env var was set to ${{ steps.set-matrix.outputs.clients }}."
+        # env:
+        #   GITHUB_ENV: ${{ github.workspace }}/matrix_env
+      - run: |
+          {
+            echo "### :rocket: Workflow inputs"
+            echo "| Arg                 | Value |"
+            echo "| ------------------- | ----- |"
+            echo "| Print inputs        | ${{ inputs.print-inputs }} |"
+            echo "| Environment         | ${{ inputs.environment }} |"
+            echo "| Outputs | ${{ steps.set-matrix.outputs.clients }} |"
+          } >> $GITHUB_STEP_SUMMARY
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -60,8 +67,8 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - run: echo "Output ${{ needs.configure_matrix.outputs.matrix }}"
-      - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.matrix) }}"
+      - run: echo "Output ${{ needs.configure_matrix.outputs.clients }}"
+      - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.clients) }}"
       - run: echo "🧖‍♀️ The job is running for client ${{ matrix.client }}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
