@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      clients: ${{ steps.set-matrix.outputs.clients }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        client: ${{fromJson(env.CLIENTS)}}
+        client: ${{fromJson(needs.build.outputs.clients)}}
         ruby-version: ["3.2"]
       fail-fast: false
     steps:
