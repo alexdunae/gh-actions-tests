@@ -21,23 +21,20 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-        # with:
-        #   sparse-checkout: |
-        #     .github
-        #     lib/customization
+        with:
+          sparse-checkout: |
+            lib/customization
 
       - name: Prepare Matrix
         id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" || ("${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.allClients }}" != "true") ]]; then
-            echo "CLIENTS='[\"culturecode\"]'" >> $GITHUB_OUTPUT
+            echo "CLIENTS=[\"culturecode\"]" >> $GITHUB_OUTPUT
           else
             CLIENTS=$(ls lib/customization/*.rb | xargs -n1 basename | sed 's/.rb$//' | jq -R -s -c 'split("\n")[:-1]' | jq -c .)
-            echo "CLIENTS='$CLIENTS'" >> $GITHUB_OUTPUT
+            echo "CLIENTS=$CLIENTS" >> $GITHUB_OUTPUT
           fi
       - run: echo "🍏 The clients env var was set to ${{ steps.set-matrix.outputs.clients }}."
-        # env:
-        #   GITHUB_ENV: ${{ github.workspace }}/matrix_env
       - name: Print summary
         run: |
           {
@@ -53,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        client: ${{fromJson(needs.build.outputs.clients)}}
+        client: ${{ fromJson(needs.build.outputs.clients) }}
         ruby-version: ["3.2"]
       fail-fast: false
     steps:
