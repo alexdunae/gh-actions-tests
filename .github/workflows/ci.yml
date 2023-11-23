@@ -46,6 +46,7 @@ jobs:
             echo "| Print inputs        | ${{ inputs.print-inputs }} |"
             echo "| Environment         | ${{ inputs.environment }} |"
             echo "| Outputs | ${{ steps.set-matrix.outputs.clients }} |"
+            echo "| Outputs | ${{ env.CLIENTS }} |"
           } >> $GITHUB_STEP_SUMMARY
   test:
     needs: build
