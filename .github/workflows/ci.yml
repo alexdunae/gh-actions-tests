@@ -36,7 +36,7 @@ jobs:
             echo "CLIENTS=\"$CLIENTS\"" >> $GITHUB_ENV
           fi
 
-          echo "`$CLIENTS`" >> $GITHUB_STEP_SUMMARY
+          echo "$CLIENTS" >> $GITHUB_STEP_SUMMARY
         env:
           GITHUB_ENV: ${{ github.workspace }}/matrix_env
 
