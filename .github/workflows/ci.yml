@@ -66,7 +66,6 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - run: echo "Output ${{ needs.configure_matrix.outputs.clients }}"
-      - run: echo "Output ${{ fromJson(needs.configure_matrix.outputs.clients) }}"
       - run: echo "🧖‍♀️ The job is running for client ${{ matrix.client }}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
