@@ -30,15 +30,16 @@ jobs:
         id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" || ("${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.allClients }}" != "true") ]]; then
-            echo "CLIENTS=\"['culturecode']\"" >> $GITHUB_ENV
+            echo "CLIENTS=\"['culturecode']\"" >> $GITHUB_OUTPUT
           else
             CLIENTS=$(ls lib/customization/*.rb | xargs -n1 basename | sed 's/.rb$//' | jq -R -s -c 'split("\n")[:-1]' | jq -c .)
-            echo "CLIENTS=\"$CLIENTS\"" >> $GITHUB_ENV
+            echo "CLIENTS=\"$CLIENTS\"" >> $GITHUB_OUTPUT
           fi
-      - run: echo "🍏 The clients env var was set to ${{ env.CLIENTS }}."
+      - run: echo "🍏 The clients env var was set to ${{ steps.set-matrix.outputs.clients }}."
         # env:
         #   GITHUB_ENV: ${{ github.workspace }}/matrix_env
-      - run: |
+      - name: Print summary
+        run: |
           {
             echo "### :rocket: Workflow inputs"
             echo "| Arg                 | Value |"
@@ -46,7 +47,6 @@ jobs:
             echo "| Print inputs        | ${{ inputs.print-inputs }} |"
             echo "| Environment         | ${{ inputs.environment }} |"
             echo "| Outputs | ${{ steps.set-matrix.outputs.clients }} |"
-            echo "| Outputs | ${{ env.CLIENTS }} |"
           } >> $GITHUB_STEP_SUMMARY
   test:
     needs: build
