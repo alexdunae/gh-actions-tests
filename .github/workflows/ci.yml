@@ -25,7 +25,7 @@ jobs:
       - name: Prepare Matrix
         id: set-matrix
         run: |
-          if [[ ${{ github.event_name }} == 'pull_request' || (${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.allClients }} != 'true') ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" || ("${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.allClients }}" != "true") ]]; then
             echo "::set-output name=clients::[\"culturecode\"]"
           else
             CLIENTS=$(ls lib/customization/*.rb | xargs -n1 basename | sed 's/.rb$//' | jq -R -s -c 'split("\n")[:-1]')
